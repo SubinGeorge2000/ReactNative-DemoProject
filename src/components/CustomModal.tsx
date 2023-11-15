@@ -4,18 +4,12 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 type Props = {
   modalVisible: boolean;
   setModalVisible: (modalVisible: boolean) => void;
-  selectedItem?: {
-    id: number;
-    shirtName: string;
-    category: string;
-    price: number;
-    imageUrl: string;
-  };
+  selectedItemImageUrl:string|undefined
 };
 export default function CustomModal({
   modalVisible,
   setModalVisible,
-  selectedItem,
+  selectedItemImageUrl,
 }: Props) {
   return (
     <Modal
@@ -35,7 +29,7 @@ export default function CustomModal({
           <Image
             style={styles.modalImage}
             source={{
-              uri: selectedItem?.imageUrl,
+              uri:selectedItemImageUrl,
             }}
           />
         </View>
@@ -48,6 +42,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     height: '100%',
     width: '100%',
+    backgroundColor: 'white',
   },
   modalContent: {
     backgroundColor: 'white',
@@ -58,7 +53,8 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   modalImage: {
-    height: '100%',
+    height: '50%',
     width: '100%',
+    marginTop:150
   },
 });

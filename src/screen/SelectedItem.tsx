@@ -1,12 +1,32 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
-import {DummyData} from '../data/dummyData';
+import React, {useEffect, useState} from 'react';
 import CustomModal from '../components/CustomModal';
+import axios from 'axios';
 export default function SelectedItem({route}: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const {itemId} = route?.params;
 
-  const selectedItem = DummyData.find(item => item.id === itemId);
+  type Props = {
+    id: number;
+    category: string;
+    content: string;
+    image: string;
+    publishedAt: string;
+    slug: string;
+    status: string;
+    thumbnail: string;
+    title: string;
+    updatedAt: string;
+    url: string;
+    userId: number;
+  };
+  const [selectedItem, setSelectedItem] = useState<Props>();
+  useEffect(() => {
+    axios
+      .get(`https://jsonplaceholder.org/posts/${itemId}`)
+      .then(res => setSelectedItem(res.data))
+      .catch(e => console.log(e));
+  }, [itemId]);
   return (
     <View>
       <View style={styles.header}>
@@ -14,20 +34,24 @@ export default function SelectedItem({route}: any) {
           <CustomModal
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
-            selectedItem={selectedItem}
+            selectedItemImageUrl={selectedItem?.image}
           />
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Image
               style={styles.imageView}
               source={{
-                uri: selectedItem?.imageUrl,
+                uri: selectedItem?.image,
               }}
             />
           </TouchableOpacity>
           <View style={styles.detailsView}>
-            <Text style={styles.textFont}>{selectedItem?.shirtName}</Text>
+            <Text style={styles.textFont}>
+              {selectedItem?.title.substring(0, 10)}
+            </Text>
             <Text>
-              {`from $${selectedItem?.price}/${selectedItem?.category}`}
+              {`from $${
+                selectedItem?.userId
+              }/${selectedItem?.category.substring(0, 10)}`}
             </Text>
           </View>
         </View>

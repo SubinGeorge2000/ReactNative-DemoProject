@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,19 +7,39 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import {DummyData} from '../data/dummyData';
 import Header from '../components/Header';
-import BottomTab from '../components/BottomTab';
+import axios from 'axios';
 
 export default function Home({navigation}: any) {
+  const [data, SetData] = useState([]);
+
   const [searchItem, SetSearchItem] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('https://jsonplaceholder.org/posts')
+      .then(res => {
+        SetData(res.data);
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+  }, []);
+
   type Props = {
     item: {
       id: number;
-      shirtName: string;
       category: string;
-      price: number;
-      imageUrl: string;
+      content: string;
+      image: string;
+      publishedAt: string;
+      slug: string;
+      status: string;
+      thumbnail: string;
+      title: string;
+      updatedAt: string;
+      url: string;
+      userId: number;
     };
   };
   const renderItem = ({item}: Props) => {
@@ -36,16 +56,16 @@ export default function Home({navigation}: any) {
           <Image
             style={styles.image}
             source={{
-              uri: item.imageUrl,
+              uri: item?.image,
             }}
           />
           <View style={styles.textContainer}>
-            <Text style={styles.text}>{item.shirtName}</Text>
+            <Text style={styles.text}>{item.title.substring(0, 10)}</Text>
             <Text style={styles.text}>From</Text>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.text}>{item.category}</Text>
-            <Text style={styles.text}>${item.price}</Text>
+            <Text style={styles.text}>{item.category.substring(0, 10)}</Text>
+            <Text style={styles.text}>${item.userId}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -56,11 +76,14 @@ export default function Home({navigation}: any) {
     SetSearchItem(text);
   };
 
+  type PropsSlug = {
+    title: string;
+  };
   const filtedDummyData = useMemo(() => {
-    return DummyData?.filter(item =>
-      item?.shirtName?.toLowerCase().includes(searchItem.toLocaleLowerCase()),
+    return data?.filter((item: PropsSlug) =>
+      item?.title?.toLowerCase().includes(searchItem.toLocaleLowerCase()),
     );
-  }, [searchItem, DummyData]);
+  }, [searchItem, data]);
 
   return (
     <View style={{flex: 1}}>
@@ -72,7 +95,6 @@ export default function Home({navigation}: any) {
         keyExtractor={item => item.id.toString()}
         numColumns={2}
       />
-      <BottomTab navigation={navigation} />
     </View>
   );
 }
