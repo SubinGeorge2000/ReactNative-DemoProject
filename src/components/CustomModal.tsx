@@ -4,24 +4,23 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 type Props = {
   modalVisible: boolean;
   setModalVisible: (modalVisible: boolean) => void;
-  selectedItemImageUrl:string|undefined
+  selectedItemImageUrl: string | undefined;
 };
 export default function CustomModal({
   modalVisible,
   setModalVisible,
   selectedItemImageUrl,
 }: Props) {
+  const onChangeModal = () => setModalVisible(!modalVisible);
   return (
     <Modal
       animationType="fade"
       transparent={true}
       visible={modalVisible}
-      onRequestClose={() => {
-        setModalVisible(!modalVisible);
-      }}>
+      onRequestClose={onChangeModal}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Pressable onPress={() => setModalVisible(!modalVisible)}>
+          <Pressable onPress={onChangeModal}>
             <View style={styles.cancelButton}>
               <MaterialIcons name="cancel" color="black" size={40} />
             </View>
@@ -29,7 +28,7 @@ export default function CustomModal({
           <Image
             style={styles.modalImage}
             source={{
-              uri:selectedItemImageUrl,
+              uri: selectedItemImageUrl,
             }}
           />
         </View>
@@ -55,6 +54,6 @@ const styles = StyleSheet.create({
   modalImage: {
     height: '50%',
     width: '100%',
-    marginTop:150
+    marginTop: 150,
   },
 });

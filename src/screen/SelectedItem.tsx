@@ -1,11 +1,24 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Button,
+  Image,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import CustomModal from '../components/CustomModal';
-import axios from 'axios';
+import {fetchData} from '../api';
+import {useDispatch, useSelector} from 'react-redux';
+import {add} from '../reducers/index';
+
 export default function SelectedItem({route}: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const {itemId} = route?.params;
 
+  const dispatch = useDispatch();
+  const list = useSelector((state: any) => state.list);
   type Props = {
     id: number;
     category: string;
@@ -21,12 +34,26 @@ export default function SelectedItem({route}: any) {
     userId: number;
   };
   const [selectedItem, setSelectedItem] = useState<Props>();
+  const fetchItemById = async (itemId: number) => {
+    try {
+      const data = await fetchData(
+        `https://jsonplaceholder.org/posts/${itemId}`,
+      );
+      setSelectedItem(data.data);
+    } catch (e) {
+      ToastAndroid.show('Error while fetching data', ToastAndroid.SHORT);
+    }
+  };
   useEffect(() => {
-    axios
-      .get(`https://jsonplaceholder.org/posts/${itemId}`)
-      .then(res => setSelectedItem(res.data))
-      .catch(e => console.log(e));
+    fetchItemById(itemId);
   }, [itemId]);
+
+  const onPressButton = (id: number) => {
+    const _list = list?.length ? [...list] : [];
+    _list.includes(id) ? _list : _list.push(id);
+    dispatch(add({data: _list}));
+    ToastAndroid.show('added successfully', ToastAndroid.SHORT);
+  };
   return (
     <View>
       <View style={styles.header}>
@@ -40,7 +67,7 @@ export default function SelectedItem({route}: any) {
             <Image
               style={styles.imageView}
               source={{
-                uri: selectedItem?.image,
+                uri: selectedItem?.image ?? '',
               }}
             />
           </TouchableOpacity>
@@ -54,6 +81,13 @@ export default function SelectedItem({route}: any) {
               }/${selectedItem?.category.substring(0, 10)}`}
             </Text>
           </View>
+        </View>
+        <View style={{alignItems: 'center', paddingTop: 20}}>
+          <Button
+            onPress={() => onPressButton(selectedItem?.id ?? 0)}
+            title="Add to Cart"
+            color="#841584"
+          />
         </View>
       </View>
     </View>

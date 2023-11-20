@@ -27,22 +27,19 @@ function Header({onChangeSearch}: Props) {
         </View>
       </View>
       <View style={styles.searchHeader}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={{paddingBottom: 12}}>
+        <View style={styles.innerSearch}>
+          <View style={styles.searchButton}>
             <EvilIcons name="search" color="black" size={50} />
           </View>
           <ScrollView keyboardShouldPersistTaps={'handled'}>
             <TextInput
-              style={{
-                borderColor: 'gray',
-                fontSize: 20,
-              }}
+              style={styles.textInput}
               placeholder="Search"
               onChangeText={onChangeSearch}
             />
           </ScrollView>
         </View>
-        <View style={{}}>
+        <View>
           <EvilIcons name="camera" color="black" size={50} />
         </View>
       </View>
@@ -74,6 +71,17 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  textInput: {
+    borderColor: 'gray',
+    fontSize: 20,
+  },
+  innerSearch: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  searchButton: {
+    paddingBottom: 12,
   },
 });
 

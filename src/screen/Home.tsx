@@ -6,50 +6,38 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import Header from '../components/Header';
-import axios from 'axios';
+import {fetchData} from '../api';
 
 export default function Home({navigation}: any) {
-  const [data, SetData] = useState([]);
+  const [data, setData] = useState<any>([]);
 
   const [searchItem, SetSearchItem] = useState('');
 
-  useEffect(() => {
-    axios
-      .get('https://jsonplaceholder.org/posts')
-      .then(res => {
-        SetData(res.data);
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
-  }, []);
-
-  type Props = {
-    item: {
-      id: number;
-      category: string;
-      content: string;
-      image: string;
-      publishedAt: string;
-      slug: string;
-      status: string;
-      thumbnail: string;
-      title: string;
-      updatedAt: string;
-      url: string;
-      userId: number;
-    };
+  const fetch = async () => {
+    try {
+      const data = await fetchData('https://jsonplaceholder.org/posts');
+      setData(data.data);
+    } catch (e) {
+      console.log('error', Object.assign({}, e));
+      ToastAndroid.show('Error while fetching data', ToastAndroid.SHORT);
+    }
   };
-  const renderItem = ({item}: Props) => {
+
+  useEffect(() => {
+    fetch();
+  }, []);
+  const navigateToSelectedItem = (id: number) => {
+    navigation.navigate('SelectedItem', {
+      itemId: id,
+    });
+  };
+  const renderItem = ({item}: DataItem) => {
     return (
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('SelectedItem', {
-            itemId: item.id,
-          })
-        }
+        onPress={() => navigateToSelectedItem(item.id)}
         style={styles.container}
         key={item.id}>
         <View>
